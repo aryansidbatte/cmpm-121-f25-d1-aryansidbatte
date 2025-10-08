@@ -19,7 +19,9 @@ counter.textContent = "Button clicked 0 times.";
 // Click handler: increment counter and toggle a visual state
 button.addEventListener("click", () => {
   count += 1;
-  counter.textContent = `Button clicked ${count} time${count === 1 ? "" : "s"}.`;
+  counter.textContent = `Button clicked ${count} time${
+    count === 1 ? "" : "s"
+  }.`;
   button.classList.toggle("clicked");
   console.debug(`magicButton clicked, count=${count}`);
 });
