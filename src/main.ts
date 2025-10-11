@@ -8,8 +8,9 @@ app.className = "app-container";
 const button = document.createElement("button");
 button.type = "button";
 button.id = "magicButton";
-button.textContent = "Click me";
-button.setAttribute("aria-label", "Increment the counter");
+// Use the chosen emoji as the button label; keep an accessible aria-label
+button.textContent = "🗿";
+button.setAttribute("aria-label", "Moai statue — increment the counter");
 
 const counter = document.createElement("p");
 counter.id = "clickCounter";
