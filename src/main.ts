@@ -17,15 +17,31 @@ counter.id = "clickCounter";
 let count = 0;
 counter.textContent = "Button clicked 0 times.";
 
-// Click handler: increment counter and toggle a visual state
-button.addEventListener("click", () => {
-  count += 1;
+// Update UI helper
+function updateCounterText() {
   counter.textContent = `Button clicked ${count} time${
     count === 1 ? "" : "s"
   }.`;
-  button.classList.toggle("clicked");
-  console.debug(`magicButton clicked, count=${count}`);
-});
+}
+
+// Increment helper used by clicks and automatic ticks
+function incrementCount(by = 1, isAuto = false) {
+  count += by;
+  updateCounterText();
+  // For manual clicks, show a brief pressed state
+  if (!isAuto) {
+    button.classList.add("clicked");
+    // remove the pressed visual shortly after
+    setTimeout(() => button.classList.remove("clicked"), 150);
+  }
+  console.debug(`magicButton clicked, count=${count}, auto=${isAuto}`);
+}
+
+// Click handler: use the shared increment function
+button.addEventListener("click", () => incrementCount(1, false));
+
+// Automatic clicking: increment once every 1000ms
+setInterval(() => incrementCount(1, true), 1000);
 
 // Compose and attach to document
 app.appendChild(button);
