@@ -19,20 +19,28 @@ counter.textContent = "Button clicked 0 times.";
 
 // Update UI helper
 function updateCounterText() {
-  counter.textContent = `Button clicked ${count} time${
-    count === 1 ? "" : "s"
-  }.`;
+  const display = Number.isInteger(count) ? String(count) : count.toFixed(2);
+  const unit = Math.abs(count - 1) < 0.5 ? "time" : "times";
+  counter.textContent = `Button clicked ${display} ${unit}.`;
 }
 
 // Increment helper used by clicks and automatic ticks
 function incrementCount(by = 1, isAuto = false) {
   count += by;
   updateCounterText();
-  // For manual clicks, show a brief pressed state
+  // For manual clicks, show a brief pressed state using the Web Animations API
   if (!isAuto) {
-    button.classList.add("clicked");
-    // remove the pressed visual shortly after
-    setTimeout(() => button.classList.remove("clicked"), 150);
+    // a short press animation; using animate avoids setTimeout
+    button.animate(
+      [
+        { transform: "translateY(0)", boxShadow: "0 2px 0 rgba(0,0,0,0.12)" },
+        {
+          transform: "translateY(-3px)",
+          boxShadow: "0 8px 16px rgba(0,0,0,0.12)",
+        },
+      ],
+      { duration: 150, easing: "ease-out", fill: "forwards" },
+    );
   }
   console.debug(`magicButton clicked, count=${count}, auto=${isAuto}`);
 }
@@ -40,8 +48,22 @@ function incrementCount(by = 1, isAuto = false) {
 // Click handler: use the shared increment function
 button.addEventListener("click", () => incrementCount(1, false));
 
-// Automatic clicking: increment once every 1000ms
-setInterval(() => incrementCount(1, true), 1000);
+// Continuous growth: use requestAnimationFrame to add fractional amounts so the
+// counter increases at 1 unit per second regardless of frame rate.
+let lastTimestamp = performance.now();
+function rafTick(ts: DOMHighResTimeStamp) {
+  // delta is in seconds
+  const delta = (ts - lastTimestamp) / 1000;
+  lastTimestamp = ts;
+
+  // add delta units so that over one second the count increases by ~1
+  incrementCount(delta, true);
+
+  requestAnimationFrame(rafTick);
+}
+
+// start the animation loop
+requestAnimationFrame(rafTick);
 
 // Compose and attach to document
 app.appendChild(button);
