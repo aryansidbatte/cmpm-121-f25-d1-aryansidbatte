@@ -25,12 +25,47 @@ interface Item {
   name: string;
   baseCost: number;
   rate: number;
+  description?: string;
 }
 
 const availableItems: Item[] = [
-  { id: "A", name: "Tapper", baseCost: 10, rate: 0.1 },
-  { id: "B", name: "Carver", baseCost: 100, rate: 2 },
-  { id: "C", name: "Monument", baseCost: 1000, rate: 50 },
+  {
+    id: "A",
+    name: "Tapper",
+    baseCost: 10,
+    rate: 0.1,
+    description: "A small tapper that gently produces 0.1 moyai per second.",
+  },
+  {
+    id: "B",
+    name: "Carver",
+    baseCost: 100,
+    rate: 2,
+    description: "A dedicated carver who chips away at the stone (+2/s).",
+  },
+  {
+    id: "C",
+    name: "Monument",
+    baseCost: 1000,
+    rate: 50,
+    description: "A grand monument that radiates moyai productivity (+50/s).",
+  },
+  {
+    id: "D",
+    name: "Shrine",
+    baseCost: 5000,
+    rate: 300,
+    description:
+      "A small shrine where offerings multiply moyai output (+300/s).",
+  },
+  {
+    id: "E",
+    name: "Cultivator",
+    baseCost: 25000,
+    rate: 2000,
+    description:
+      "A group of devoted cultivators accelerating moyai production (+2000/s).",
+  },
 ];
 
 // state maps keyed by item id
@@ -70,11 +105,18 @@ for (const item of availableItems) {
   span.id = `upgrade${item.id}Count`;
   span.textContent = `${item.name}: 0`;
 
+  // description element (optional)
+  const desc = document.createElement("div");
+  desc.className = "item-description";
+  desc.textContent = item.description || "";
+
   // group and append
   const group = document.createElement("p");
   group.appendChild(btn);
   group.appendChild(document.createTextNode(" "));
   group.appendChild(span);
+  group.appendChild(document.createTextNode(" "));
+  group.appendChild(desc);
   app.appendChild(group);
 
   // initial disabled state
