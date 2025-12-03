@@ -170,8 +170,9 @@ function updateUI() {
   }
 }
 
-// Increment helper used by clicks and automatic ticks
-function incrementCount(by = 1, isAuto = false) {
+// HELPER FUNCTIONS
+// Process an increment: update count, UI, and optional animation
+function processIncrement(by = 1, isAuto = false) {
   count += by;
   updateUI();
   // For manual clicks, show a brief pressed state using the Web Animations API
@@ -192,7 +193,7 @@ function incrementCount(by = 1, isAuto = false) {
 
 // EVENT LISTENERS
 // Click handler: use the shared increment function
-button.addEventListener("click", () => incrementCount(1, false));
+button.addEventListener("click", () => processIncrement(1, false));
 
 // Continuous growth: use requestAnimationFrame to add fractional amounts so the
 // counter increases at growthRate units per second regardless of frame rate.
@@ -204,7 +205,7 @@ function rafTick(ts: DOMHighResTimeStamp) {
 
   // add fractional units based on growthRate so growthRate units are added per frame
   if (growthRate !== 0) {
-    incrementCount(delta * growthRate, true);
+    processIncrement(delta * growthRate, true);
   }
 
   requestAnimationFrame(rafTick);
