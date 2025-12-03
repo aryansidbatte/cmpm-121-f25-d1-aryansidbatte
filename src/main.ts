@@ -1,5 +1,7 @@
 import "./style.css";
 
+// UI ELEMENTS
+
 // Build the page UI using TypeScript (do not edit index.html)
 const app = document.createElement("main");
 app.className = "app-container";
@@ -19,7 +21,7 @@ counter.textContent = "Moyai: 0";
 // Growth rate in units per second
 let growthRate = 0;
 
-// Data-driven items
+// GAME DATA
 interface Item {
   id: string;
   name: string;
@@ -68,6 +70,7 @@ const availableItems: Item[] = [
   },
 ];
 
+// STATE MANAGEMENT
 // state maps keyed by item id
 const owned: Record<string, number> = {};
 const currentCost: Record<string, number> = {};
@@ -80,6 +83,7 @@ const countMap: Record<string, HTMLSpanElement> = {} as Record<
   HTMLSpanElement
 >;
 
+// DISPLAY ELEMENTS
 // production display
 const growthDisplay = document.createElement("p");
 growthDisplay.id = "growthDisplay";
@@ -139,6 +143,7 @@ for (const item of availableItems) {
   });
 }
 
+// HELPER FUNCTIONS
 // Update UI helper
 function updateCounterText() {
   const display = Number.isInteger(count) ? String(count) : count.toFixed(2);
@@ -186,6 +191,7 @@ function incrementCount(by = 1, isAuto = false) {
   console.debug(`magicButton clicked, count=${count}, auto=${isAuto}`);
 }
 
+// EVENT LISTENERS
 // Click handler: use the shared increment function
 button.addEventListener("click", () => incrementCount(1, false));
 
@@ -208,7 +214,8 @@ function rafTick(ts: DOMHighResTimeStamp) {
 // start the animation loop
 requestAnimationFrame(rafTick);
 
-// Compose and attach to document (insert production display under counter)
+// COMPOSITION
+// Compose and attach to document
 app.appendChild(button);
 app.appendChild(counter);
 // place production display at the bottom of the app
