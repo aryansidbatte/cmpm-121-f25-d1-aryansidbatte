@@ -1,6 +1,11 @@
 import "./style.css";
 
 // UI ELEMENTS
+// UI styling inspiration credit:
+// - Background color: Shawn-Kramer / D1-Clicker-Game
+//   https://github.com/Shawn-Kramer/D1-Clicker-Game
+// - Centering layout: AngelCasta34 / cmpm-121-f25-d1-AngelCastaneda
+//   https://github.com/AngelCasta34/cmpm-121-f25-d1-AngelCastaneda
 
 // Build the page UI using TypeScript (do not edit index.html)
 const app = document.createElement("main");
