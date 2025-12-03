@@ -10,20 +10,20 @@ button.type = "button";
 button.id = "magicButton";
 // Use the chosen emoji as the button label; keep an accessible aria-label
 button.textContent = "🗿";
-button.setAttribute("aria-label", "Moai statue — increment the counter");
+button.setAttribute("aria-label", "Moyai — collect moyai");
 
 const counter = document.createElement("p");
 counter.id = "clickCounter";
 let count = 0;
-counter.textContent = "Button clicked 0 times.";
+counter.textContent = "Moyai: 0";
 
 // Growth rate in units per second (starts at 0 per Step 5 requirements)
 let growthRate = 0;
-// Upgrades configuration and ownership tracking
+// Upgrades configuration and ownership tracking (moyai-themed)
 const UPGRADES = {
-  A: { key: "A", cost: 10, rate: 0.1, label: "A (+0.1/s)" },
-  B: { key: "B", cost: 100, rate: 2.0, label: "B (+2/s)" },
-  C: { key: "C", cost: 1000, rate: 50.0, label: "C (+50/s)" },
+  A: { key: "A", cost: 10, rate: 0.1, displayName: "Tapper" },
+  B: { key: "B", cost: 100, rate: 2.0, displayName: "Carver" },
+  C: { key: "C", cost: 1000, rate: 50.0, displayName: "Monument" },
 } as const;
 
 const upgradesOwned: Record<string, number> = { A: 0, B: 0, C: 0 };
@@ -38,53 +38,56 @@ const upgradesCost: Record<string, number> = {
 // UI for upgrade purchases and status
 const growthDisplay = document.createElement("p");
 growthDisplay.id = "growthDisplay";
-growthDisplay.textContent = `Growth: ${growthRate}/s`;
+growthDisplay.textContent = `Production: ${growthRate.toFixed(2)} moyai/s`;
 
 // create buttons and owned-count displays for each upgrade
 const upgradeAButton = document.createElement("button");
 upgradeAButton.type = "button";
 upgradeAButton.id = "upgradeAButton";
-upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${
-  upgradesCost.A.toFixed(2)
-})`;
+upgradeAButton.textContent =
+  `Buy ${UPGRADES.A.displayName} (+${UPGRADES.A.rate}/s) (${
+    upgradesCost.A.toFixed(2)
+  })`;
 upgradeAButton.setAttribute(
   "aria-label",
-  `Purchase upgrade A: +${UPGRADES.A.rate}/s for ${UPGRADES.A.cost} units`,
+  `Purchase ${UPGRADES.A.displayName}: +${UPGRADES.A.rate} moyai/s for ${UPGRADES.A.cost} moyai`,
 );
 
 const upgradeBButton = document.createElement("button");
 upgradeBButton.type = "button";
 upgradeBButton.id = "upgradeBButton";
-upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${
-  upgradesCost.B.toFixed(2)
-})`;
+upgradeBButton.textContent =
+  `Buy ${UPGRADES.B.displayName} (+${UPGRADES.B.rate}/s) (${
+    upgradesCost.B.toFixed(2)
+  })`;
 upgradeBButton.setAttribute(
   "aria-label",
-  `Purchase upgrade B: +${UPGRADES.B.rate}/s for ${UPGRADES.B.cost} units`,
+  `Purchase ${UPGRADES.B.displayName}: +${UPGRADES.B.rate} moyai/s for ${UPGRADES.B.cost} moyai`,
 );
 
 const upgradeCButton = document.createElement("button");
 upgradeCButton.type = "button";
 upgradeCButton.id = "upgradeCButton";
-upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${
-  upgradesCost.C.toFixed(2)
-})`;
+upgradeCButton.textContent =
+  `Buy ${UPGRADES.C.displayName} (+${UPGRADES.C.rate}/s) (${
+    upgradesCost.C.toFixed(2)
+  })`;
 upgradeCButton.setAttribute(
   "aria-label",
-  `Purchase upgrade C: +${UPGRADES.C.rate}/s for ${UPGRADES.C.cost} units`,
+  `Purchase ${UPGRADES.C.displayName}: +${UPGRADES.C.rate} moyai/s for ${UPGRADES.C.cost} moyai`,
 );
 
 const upgradeACount = document.createElement("span");
 upgradeACount.id = "upgradeACount";
-upgradeACount.textContent = "Owned: 0";
+upgradeACount.textContent = `${UPGRADES.A.displayName}: 0`;
 
 const upgradeBCount = document.createElement("span");
 upgradeBCount.id = "upgradeBCount";
-upgradeBCount.textContent = "Owned: 0";
+upgradeBCount.textContent = `${UPGRADES.B.displayName}: 0`;
 
 const upgradeCCount = document.createElement("span");
 upgradeCCount.id = "upgradeCCount";
-upgradeCCount.textContent = "Owned: 0";
+upgradeCCount.textContent = `${UPGRADES.C.displayName}: 0`;
 
 // Initially disable buttons until affordable
 upgradeAButton.disabled = true;
@@ -94,8 +97,7 @@ upgradeCButton.disabled = true;
 // Update UI helper
 function updateCounterText() {
   const display = Number.isInteger(count) ? String(count) : count.toFixed(2);
-  const unit = Math.abs(count - 1) < 0.5 ? "time" : "times";
-  counter.textContent = `Button clicked ${display} ${unit}.`;
+  counter.textContent = `Moyai: ${display}`;
 }
 
 // Update all UI elements that depend on count/growthRate
@@ -105,21 +107,24 @@ function updateUI() {
   growthRate = upgradesOwned.A * UPGRADES.A.rate +
     upgradesOwned.B * UPGRADES.B.rate +
     upgradesOwned.C * UPGRADES.C.rate;
-  growthDisplay.textContent = `Growth: ${growthRate.toFixed(2)}/s`;
+  growthDisplay.textContent = `Production: ${growthRate.toFixed(2)} moyai/s`;
   // update owned counts and button disabled states
-  upgradeACount.textContent = `Owned: ${upgradesOwned.A}`;
-  upgradeBCount.textContent = `Owned: ${upgradesOwned.B}`;
-  upgradeCCount.textContent = `Owned: ${upgradesOwned.C}`;
+  upgradeACount.textContent = `${UPGRADES.A.displayName}: ${upgradesOwned.A}`;
+  upgradeBCount.textContent = `${UPGRADES.B.displayName}: ${upgradesOwned.B}`;
+  upgradeCCount.textContent = `${UPGRADES.C.displayName}: ${upgradesOwned.C}`;
   // update button labels with current cost
-  upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${
-    upgradesCost.A.toFixed(2)
-  })`;
-  upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${
-    upgradesCost.B.toFixed(2)
-  })`;
-  upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${
-    upgradesCost.C.toFixed(2)
-  })`;
+  upgradeAButton.textContent =
+    `Buy ${UPGRADES.A.displayName} (+${UPGRADES.A.rate}/s) (${
+      upgradesCost.A.toFixed(2)
+    })`;
+  upgradeBButton.textContent =
+    `Buy ${UPGRADES.B.displayName} (+${UPGRADES.B.rate}/s) (${
+      upgradesCost.B.toFixed(2)
+    })`;
+  upgradeCButton.textContent =
+    `Buy ${UPGRADES.C.displayName} (+${UPGRADES.C.rate}/s) (${
+      upgradesCost.C.toFixed(2)
+    })`;
   // enable/disable based on current dynamic price
   upgradeAButton.disabled = count < upgradesCost.A;
   upgradeBButton.disabled = count < upgradesCost.B;
