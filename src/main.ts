@@ -19,21 +19,64 @@ counter.textContent = "Button clicked 0 times.";
 
 // Growth rate in units per second (starts at 0 per Step 5 requirements)
 let growthRate = 0;
+// Upgrades configuration and ownership tracking
+const UPGRADES = {
+  A: { key: "A", cost: 10, rate: 0.1, label: "A (+0.1/s)" },
+  B: { key: "B", cost: 100, rate: 2.0, label: "B (+2/s)" },
+  C: { key: "C", cost: 1000, rate: 50.0, label: "C (+50/s)" },
+} as const;
 
-// UI for upgrade purchases
+const upgradesOwned: Record<string, number> = { A: 0, B: 0, C: 0 };
+
+// UI for upgrade purchases and status
 const growthDisplay = document.createElement("p");
 growthDisplay.id = "growthDisplay";
 growthDisplay.textContent = `Growth: ${growthRate}/s`;
 
-const upgradeButton = document.createElement("button");
-upgradeButton.type = "button";
-upgradeButton.id = "upgradeButton";
-upgradeButton.textContent = "Buy +1/s (10)";
-upgradeButton.setAttribute(
+// create buttons and owned-count displays for each upgrade
+const upgradeAButton = document.createElement("button");
+upgradeAButton.type = "button";
+upgradeAButton.id = "upgradeAButton";
+upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${UPGRADES.A.cost})`;
+upgradeAButton.setAttribute(
   "aria-label",
-  "Purchase: increase growth rate by one per second for cost of 10 units",
+  `Purchase upgrade A: +${UPGRADES.A.rate}/s for ${UPGRADES.A.cost} units`,
 );
-upgradeButton.disabled = true; // initially disabled until player has 10 units
+
+const upgradeBButton = document.createElement("button");
+upgradeBButton.type = "button";
+upgradeBButton.id = "upgradeBButton";
+upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${UPGRADES.B.cost})`;
+upgradeBButton.setAttribute(
+  "aria-label",
+  `Purchase upgrade B: +${UPGRADES.B.rate}/s for ${UPGRADES.B.cost} units`,
+);
+
+const upgradeCButton = document.createElement("button");
+upgradeCButton.type = "button";
+upgradeCButton.id = "upgradeCButton";
+upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${UPGRADES.C.cost})`;
+upgradeCButton.setAttribute(
+  "aria-label",
+  `Purchase upgrade C: +${UPGRADES.C.rate}/s for ${UPGRADES.C.cost} units`,
+);
+
+const upgradeACount = document.createElement("span");
+upgradeACount.id = "upgradeACount";
+upgradeACount.textContent = "Owned: 0";
+
+const upgradeBCount = document.createElement("span");
+upgradeBCount.id = "upgradeBCount";
+upgradeBCount.textContent = "Owned: 0";
+
+const upgradeCCount = document.createElement("span");
+upgradeCCount.id = "upgradeCCount";
+upgradeCCount.textContent = "Owned: 0";
+
+// Initially disable buttons until affordable
+upgradeAButton.disabled = true;
+upgradeBButton.disabled = true;
+upgradeCButton.disabled = true;
 
 // Update UI helper
 function updateCounterText() {
@@ -45,8 +88,18 @@ function updateCounterText() {
 // Update all UI elements that depend on count/growthRate
 function updateUI() {
   updateCounterText();
-  growthDisplay.textContent = `Growth: ${growthRate}/s`;
-  upgradeButton.disabled = count < 10;
+  // recompute growth rate from owned upgrades
+  growthRate = upgradesOwned.A * UPGRADES.A.rate +
+    upgradesOwned.B * UPGRADES.B.rate +
+    upgradesOwned.C * UPGRADES.C.rate;
+  growthDisplay.textContent = `Growth: ${growthRate.toFixed(2)}/s`;
+  // update owned counts and button disabled states
+  upgradeACount.textContent = `Owned: ${upgradesOwned.A}`;
+  upgradeBCount.textContent = `Owned: ${upgradesOwned.B}`;
+  upgradeCCount.textContent = `Owned: ${upgradesOwned.C}`;
+  upgradeAButton.disabled = count < UPGRADES.A.cost;
+  upgradeBButton.disabled = count < UPGRADES.B.cost;
+  upgradeCButton.disabled = count < UPGRADES.C.cost;
 }
 
 // Increment helper used by clicks and automatic ticks
@@ -97,15 +150,54 @@ requestAnimationFrame(rafTick);
 app.appendChild(button);
 app.appendChild(counter);
 app.appendChild(growthDisplay);
-app.appendChild(upgradeButton);
+
+// Group upgrade A
+const upgradeAGroup = document.createElement("p");
+upgradeAGroup.appendChild(upgradeAButton);
+upgradeAGroup.appendChild(document.createTextNode(" "));
+upgradeAGroup.appendChild(upgradeACount);
+app.appendChild(upgradeAGroup);
+
+// Group upgrade B
+const upgradeBGroup = document.createElement("p");
+upgradeBGroup.appendChild(upgradeBButton);
+upgradeBGroup.appendChild(document.createTextNode(" "));
+upgradeBGroup.appendChild(upgradeBCount);
+app.appendChild(upgradeBGroup);
+
+// Group upgrade C
+const upgradeCGroup = document.createElement("p");
+upgradeCGroup.appendChild(upgradeCButton);
+upgradeCGroup.appendChild(document.createTextNode(" "));
+upgradeCGroup.appendChild(upgradeCCount);
+app.appendChild(upgradeCGroup);
+
 document.body.appendChild(app);
 
-// Purchase handler: deduct cost and increase growth rate by 1 when affordable
-upgradeButton.addEventListener("click", () => {
-  const cost = 10;
+// Purchase handlers for each upgrade
+upgradeAButton.addEventListener("click", () => {
+  const cost = UPGRADES.A.cost;
   if (count >= cost) {
     count -= cost;
-    growthRate += 1; // increase growth by 1 unit/sec
+    upgradesOwned.A += 1;
+    updateUI();
+  }
+});
+
+upgradeBButton.addEventListener("click", () => {
+  const cost = UPGRADES.B.cost;
+  if (count >= cost) {
+    count -= cost;
+    upgradesOwned.B += 1;
+    updateUI();
+  }
+});
+
+upgradeCButton.addEventListener("click", () => {
+  const cost = UPGRADES.C.cost;
+  if (count >= cost) {
+    count -= cost;
+    upgradesOwned.C += 1;
     updateUI();
   }
 });
