@@ -188,7 +188,6 @@ function incrementCount(by = 1, isAuto = false) {
       { duration: 150, easing: "ease-out" },
     );
   }
-  console.debug(`magicButton clicked, count=${count}, auto=${isAuto}`);
 }
 
 // EVENT LISTENERS
