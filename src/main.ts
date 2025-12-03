@@ -28,6 +28,13 @@ const UPGRADES = {
 
 const upgradesOwned: Record<string, number> = { A: 0, B: 0, C: 0 };
 
+// dynamic current prices (start at the configured cost)
+const upgradesCost: Record<string, number> = {
+  A: UPGRADES.A.cost,
+  B: UPGRADES.B.cost,
+  C: UPGRADES.C.cost,
+};
+
 // UI for upgrade purchases and status
 const growthDisplay = document.createElement("p");
 growthDisplay.id = "growthDisplay";
@@ -37,7 +44,9 @@ growthDisplay.textContent = `Growth: ${growthRate}/s`;
 const upgradeAButton = document.createElement("button");
 upgradeAButton.type = "button";
 upgradeAButton.id = "upgradeAButton";
-upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${UPGRADES.A.cost})`;
+upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${
+  upgradesCost.A.toFixed(2)
+})`;
 upgradeAButton.setAttribute(
   "aria-label",
   `Purchase upgrade A: +${UPGRADES.A.rate}/s for ${UPGRADES.A.cost} units`,
@@ -46,7 +55,9 @@ upgradeAButton.setAttribute(
 const upgradeBButton = document.createElement("button");
 upgradeBButton.type = "button";
 upgradeBButton.id = "upgradeBButton";
-upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${UPGRADES.B.cost})`;
+upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${
+  upgradesCost.B.toFixed(2)
+})`;
 upgradeBButton.setAttribute(
   "aria-label",
   `Purchase upgrade B: +${UPGRADES.B.rate}/s for ${UPGRADES.B.cost} units`,
@@ -55,7 +66,9 @@ upgradeBButton.setAttribute(
 const upgradeCButton = document.createElement("button");
 upgradeCButton.type = "button";
 upgradeCButton.id = "upgradeCButton";
-upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${UPGRADES.C.cost})`;
+upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${
+  upgradesCost.C.toFixed(2)
+})`;
 upgradeCButton.setAttribute(
   "aria-label",
   `Purchase upgrade C: +${UPGRADES.C.rate}/s for ${UPGRADES.C.cost} units`,
@@ -97,9 +110,20 @@ function updateUI() {
   upgradeACount.textContent = `Owned: ${upgradesOwned.A}`;
   upgradeBCount.textContent = `Owned: ${upgradesOwned.B}`;
   upgradeCCount.textContent = `Owned: ${upgradesOwned.C}`;
-  upgradeAButton.disabled = count < UPGRADES.A.cost;
-  upgradeBButton.disabled = count < UPGRADES.B.cost;
-  upgradeCButton.disabled = count < UPGRADES.C.cost;
+  // update button labels with current cost
+  upgradeAButton.textContent = `Buy A ${UPGRADES.A.label} (${
+    upgradesCost.A.toFixed(2)
+  })`;
+  upgradeBButton.textContent = `Buy B ${UPGRADES.B.label} (${
+    upgradesCost.B.toFixed(2)
+  })`;
+  upgradeCButton.textContent = `Buy C ${UPGRADES.C.label} (${
+    upgradesCost.C.toFixed(2)
+  })`;
+  // enable/disable based on current dynamic price
+  upgradeAButton.disabled = count < upgradesCost.A;
+  upgradeBButton.disabled = count < upgradesCost.B;
+  upgradeCButton.disabled = count < upgradesCost.C;
 }
 
 // Increment helper used by clicks and automatic ticks
@@ -176,28 +200,32 @@ document.body.appendChild(app);
 
 // Purchase handlers for each upgrade
 upgradeAButton.addEventListener("click", () => {
-  const cost = UPGRADES.A.cost;
+  const cost = upgradesCost.A;
   if (count >= cost) {
     count -= cost;
     upgradesOwned.A += 1;
+    // increase price by 15%
+    upgradesCost.A *= 1.15;
     updateUI();
   }
 });
 
 upgradeBButton.addEventListener("click", () => {
-  const cost = UPGRADES.B.cost;
+  const cost = upgradesCost.B;
   if (count >= cost) {
     count -= cost;
     upgradesOwned.B += 1;
+    upgradesCost.B *= 1.15;
     updateUI();
   }
 });
 
 upgradeCButton.addEventListener("click", () => {
-  const cost = UPGRADES.C.cost;
+  const cost = upgradesCost.C;
   if (count >= cost) {
     count -= cost;
     upgradesOwned.C += 1;
+    upgradesCost.C *= 1.15;
     updateUI();
   }
 });
